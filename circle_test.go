@@ -3,7 +3,6 @@
 package circle
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/charlesetc/dive"
@@ -53,8 +52,16 @@ func TestNode(t *testing.T) {
 	n.Members["3"] = &dive.LocalRecord{BasicRecord: dive.BasicRecord{Address: "3"}}
 	n.Members["4"] = &dive.LocalRecord{BasicRecord: dive.BasicRecord{Address: "4"}}
 	c := CircleFromNode(n)
-	val, err := c.keyAddress([]byte("2"))()
-	fmt.Println(string(val), err)
+	val, err := c.KeyAddress([]byte("2"))()
+	if err != nil {
+		panic(err)
+	}
+	Equal(t, val[0], "1"[0])
+	val, err = c.KeyAddress([]byte("3"))()
+	if err != nil {
+		panic(err)
+	}
+	Equal(t, val[0], "2"[0])
 }
 
 // func TestAddress(t *testing.T) {

@@ -40,10 +40,6 @@ func NewCircleString(address string) *Circle {
 	return NewCircle([]byte(address))
 }
 
-func (c *Circle) AddString(address string) *Circle {
-	return c.Add(NewCircleString(address))
-}
-
 func (c *Circle) Add(incoming *Circle) *Circle {
 	var current *Circle
 	for current = c; current.next.hash < incoming.hash; current = current.next {
@@ -56,6 +52,10 @@ func (c *Circle) Add(incoming *Circle) *Circle {
 	return incoming
 }
 
+func (c *Circle) AddString(address string) *Circle {
+	return c.Add(NewCircleString(address))
+}
+
 func CircleFromNode(node *dive.Node) *Circle {
 	circle := NewCircleHead()
 	for _, rec := range dive.GetAliveFromMap(node.Members) {
@@ -65,7 +65,7 @@ func CircleFromNode(node *dive.Node) *Circle {
 }
 
 // Will loop forever with an empty node...
-func (c *Circle) keyAddress(key []byte) func() ([]byte, error) {
+func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 	hashed := hash(key)
 
 	var current *Circle
