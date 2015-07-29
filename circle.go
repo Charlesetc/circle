@@ -3,6 +3,7 @@
 package circle
 
 import (
+	"bytes"
 	"errors"
 	"hash/adler32"
 
@@ -15,6 +16,18 @@ type Circle struct {
 	address []byte
 	hash    uint32
 	next    *Circle
+}
+
+func (c *Circle) String() string {
+	var buffer bytes.Buffer
+	for current, first := c, true; current.hash != 0 ||
+		first; current, first = current.next, false {
+		if !first {
+			buffer.WriteString(" -> ")
+		}
+		buffer.Write(current.address)
+	}
+	return buffer.String()
 }
 
 const (
@@ -56,13 +69,11 @@ func (c *Circle) AddString(address string) *Circle {
 	return c.Add(NewCircleString(address))
 }
 
-func CircleFromList(nodes []string) *Circle {
+func CircleFromList(strs []string) *Circle {
 	circle := NewCircleHead()
-
-	for _, node := range nodes {
-		circle.AddString(node)
+	for _, str := range strs {
+		circle.AddString(str)
 	}
-
 	return circle
 }
 

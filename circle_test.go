@@ -3,6 +3,7 @@
 package circle
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/charlesetc/dive"
@@ -62,6 +63,11 @@ func TestNode(t *testing.T) {
 		panic(err)
 	}
 	Equal(t, val[0], "2"[0])
+}
+
+func TestFromList(t *testing.T) {
+	c := CircleFromList([]string{"b", "c", "a", "z"})
+	fmt.Println(c)
 }
 
 // func TestAddress(t *testing.T) {
