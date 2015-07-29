@@ -7,8 +7,6 @@ import (
 	"errors"
 	"hash/adler32"
 	"strconv"
-
-	"github.com/charlesetc/dive"
 )
 
 var Hash func([]byte) uint32 = adler32.Checksum
@@ -76,14 +74,6 @@ func CircleFromList(strs []string) *Circle {
 	circle := NewCircleHead()
 	for _, str := range strs {
 		circle.AddString(str)
-	}
-	return circle
-}
-
-func CircleFromNode(node *dive.Node) *Circle {
-	circle := NewCircleHead()
-	for _, rec := range dive.GetAliveFromMap(node.Members) {
-		circle.AddString(rec.Address)
 	}
 	return circle
 }

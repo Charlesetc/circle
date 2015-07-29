@@ -2,12 +2,7 @@
 
 package circle
 
-import (
-	"fmt"
-	"testing"
-
-	"github.com/charlesetc/dive"
-)
+import "testing"
 
 func init() {
 	Hash = func(bytes []byte) uint32 {
@@ -27,13 +22,6 @@ func NotEqual(t *testing.T, a interface{}, b interface{}) {
 	}
 }
 
-func NewTestNode() *dive.Node {
-	node := &dive.Node{
-		Members: make(map[string]*dive.LocalRecord),
-	}
-	return node
-}
-
 func TestAdd(t *testing.T) {
 	a := NewCircleHead()
 	b := a.Add(NewCircleString("b"))
@@ -47,12 +35,7 @@ func TestAdd(t *testing.T) {
 }
 
 func TestNode(t *testing.T) {
-	n := NewTestNode()
-	n.Members["2"] = &dive.LocalRecord{BasicRecord: dive.BasicRecord{Address: "2"}}
-	n.Members["1"] = &dive.LocalRecord{BasicRecord: dive.BasicRecord{Address: "1"}}
-	n.Members["3"] = &dive.LocalRecord{BasicRecord: dive.BasicRecord{Address: "3"}}
-	n.Members["4"] = &dive.LocalRecord{BasicRecord: dive.BasicRecord{Address: "4"}}
-	c := CircleFromNode(n)
+	c := CircleFromList([]string{"1", "2", "3"})
 	val, err := c.KeyAddress([]byte("2"))()
 	if err != nil {
 		panic(err)
@@ -65,9 +48,13 @@ func TestNode(t *testing.T) {
 	Equal(t, val[0], "2"[0])
 }
 
-func TestFromList(t *testing.T) {
-	c := CircleFromList([]string{"b", "c", "a", "z"})
-	fmt.Println(c)
+func TestLargeAddress(t *testing.T) {
+	c := CircleFromList([]string{"b", "c", "a", "y"})
+	val, err := c.KeyAddress([]byte("z"))()
+	if err != nil {
+		panic(err)
+	}
+	Equal(t, val[0], "y"[0])
 }
 
 // func TestAddress(t *testing.T) {
