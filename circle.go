@@ -90,10 +90,8 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 	hashed := hash(key)
 
 	var current *Circle
-	for current = c; current.next.hash < hashed; current = current.next {
-		if current.next.hash == 0 {
-			break
-		}
+	for current = c.next; current.next.hash == 0 ||
+		current.next.hash < hashed; current = current.next {
 	}
 
 	i := 0
