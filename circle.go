@@ -6,11 +6,12 @@ import (
 	"bytes"
 	"errors"
 	"hash/adler32"
+	"strconv"
 
 	"github.com/charlesetc/dive"
 )
 
-var hash func([]byte) uint32 = adler32.Checksum
+var Hash func([]byte) uint32 = adler32.Checksum
 
 type Circle struct {
 	address []byte
@@ -26,6 +27,8 @@ func (c *Circle) String() string {
 			buffer.WriteString(" -> ")
 		}
 		buffer.Write(current.address)
+		buffer.WriteString("/")
+		buffer.WriteString(strconv.Itoa(int(current.hash)))
 	}
 	return buffer.String()
 }
@@ -45,7 +48,7 @@ func NewCircleHead() *Circle {
 func NewCircle(address []byte) *Circle {
 	circle := new(Circle)
 	circle.address = address
-	circle.hash = hash(address)
+	circle.hash = Hash(address)
 	return circle
 }
 
@@ -87,10 +90,10 @@ func CircleFromNode(node *dive.Node) *Circle {
 
 // Will loop forever with an empty node...
 func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
-	hashed := hash(key)
+	hashed := Hash(key)
 
 	var current *Circle
-	for current = c.next; current.next.hash == 0 ||
+	for current = c.next; current.next.hash != 0 &&
 		current.next.hash < hashed; current = current.next {
 	}
 

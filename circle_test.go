@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	hash = func(bytes []byte) uint32 {
+	Hash = func(bytes []byte) uint32 {
 		return uint32(bytes[0])
 	}
 }
