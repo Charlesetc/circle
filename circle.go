@@ -56,6 +56,16 @@ func (c *Circle) AddString(address string) *Circle {
 	return c.Add(NewCircleString(address))
 }
 
+func CircleFromList(nodes []string) *Circle {
+	circle := NewCircleHead()
+
+	for _, node := range nodes {
+		circle.AddString(node)
+	}
+
+	return circle
+}
+
 func CircleFromNode(node *dive.Node) *Circle {
 	circle := NewCircleHead()
 	for _, rec := range dive.GetAliveFromMap(node.Members) {
