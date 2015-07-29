@@ -4,29 +4,36 @@ package circle
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"errors"
-	"hash/adler32"
-	"strconv"
+	"fmt"
 )
 
-var Hash func([]byte) uint32 = adler32.Checksum
+var Zero []byte = make([]byte, 256)
+
+var Hash func([]byte) []byte = func(bytes []byte) []byte {
+	hash := sha256.New()
+	hash.Write(bytes)
+	fmt.Println(hash.Sum(nil))
+	return hash.Sum(nil)
+}
 
 type Circle struct {
 	address []byte
-	hash    uint32
+	hash    []byte
 	next    *Circle
 }
 
 func (c *Circle) String() string {
 	var buffer bytes.Buffer
-	for current, first := c, true; current.hash != 0 ||
+	for current, first := c, true; len(current.hash) != 0 ||
 		first; current, first = current.next, false {
 		if !first {
 			buffer.WriteString(" -> ")
 		}
 		buffer.Write(current.address)
 		buffer.WriteString("/")
-		buffer.WriteString(strconv.Itoa(int(current.hash)))
+		buffer.Write(current.hash)
 	}
 	return buffer.String()
 }
@@ -37,7 +44,7 @@ const (
 
 func NewCircleHead() *Circle {
 	circle := new(Circle)
-	circle.hash = 0 // 0 means it's the head
+	circle.hash = []byte{} // empty is head.
 	// circle.address is undefined
 	circle.next = circle
 	return circle
@@ -56,8 +63,8 @@ func NewCircleString(address string) *Circle {
 
 func (c *Circle) Add(incoming *Circle) *Circle {
 	var current *Circle
-	for current = c; current.next.hash < incoming.hash; current = current.next {
-		if current.next.hash == 0 {
+	for current = c; bytes.Compare(current.next.hash, incoming.hash) == -1; current = current.next {
+		if bytes.Compare(current.next.hash, nil) == 0 {
 			break
 		}
 	}
@@ -83,8 +90,8 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 	hashed := Hash(key)
 
 	var current *Circle
-	for current = c.next; current.next.hash != 0 &&
-		current.next.hash < hashed; current = current.next {
+	for current = c.next; bytes.Compare(current.next.hash, nil) != 0 &&
+		bytes.Compare(current.next.hash, hashed) == -1; current = current.next {
 	}
 
 	i := 0
@@ -97,7 +104,7 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 		}
 
 		current = current.next
-		if current.hash == 0 {
+		if bytes.Compare(current.hash, nil) == 0 {
 			current = current.next
 		}
 

@@ -5,8 +5,8 @@ package circle
 import "testing"
 
 func init() {
-	Hash = func(bytes []byte) uint32 {
-		return uint32(bytes[0])
+	Hash = func(bytes []byte) []byte {
+		return bytes
 	}
 }
 
