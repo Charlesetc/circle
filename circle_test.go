@@ -45,7 +45,7 @@ func TestNode(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	Equal(t, val[0], "2"[0])
+	Equal(t, val[0], "3"[0])
 }
 
 func TestLargeAddress(t *testing.T) {
@@ -54,7 +54,7 @@ func TestLargeAddress(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	Equal(t, val[0], "y"[0])
+	Equal(t, val[0], "a"[0])
 }
 
 // func TestAddress(t *testing.T) {

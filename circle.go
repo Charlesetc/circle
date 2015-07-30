@@ -91,7 +91,7 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 
 	var current *Circle
 	for current = c.next; bytes.Compare(current.next.hash, nil) != 0 &&
-		bytes.Compare(current.next.hash, hashed) == -1; current = current.next {
+		bytes.Compare(current.hash, hashed) == -1; current = current.next {
 	}
 
 	i := 0
