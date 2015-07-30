@@ -38,7 +38,7 @@ func (c *Circle) String() string {
 	return buffer.String()
 }
 
-const (
+var (
 	ReplicationDepth int = 1
 )
 
