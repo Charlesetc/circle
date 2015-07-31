@@ -38,6 +38,16 @@ func (c *Circle) String() string {
 	return buffer.String()
 }
 
+func (c *Circle) AddressList() []string {
+	output := make([]string, 0)
+	for current, first := c, true; len(current.hash) != 0 ||
+		first; current, first = current.next, false {
+
+		output = append(output, string(current.address))
+	}
+	return output
+}
+
 var (
 	ReplicationDepth int = 1
 )
