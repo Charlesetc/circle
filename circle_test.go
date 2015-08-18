@@ -35,17 +35,19 @@ func TestAdd(t *testing.T) {
 }
 
 func TestNode(t *testing.T) {
-	c := CircleFromList([]string{"1", "2", "3"})
-	val, err := c.KeyAddress([]byte("2"))()
+	var val []byte
+	var err error
+	c := CircleFromList([]string{"1", "3", "5"})
+	val, err = c.KeyAddress([]byte("4"))()
 	if err != nil {
 		panic(err)
 	}
-	Equal(t, val[0], "1"[0])
+	Equal(t, string(val[0]), "5")
 	val, err = c.KeyAddress([]byte("3"))()
 	if err != nil {
 		panic(err)
 	}
-	Equal(t, val[0], "3"[0])
+	Equal(t, string(val[0]), "3")
 }
 
 func TestLargeAddress(t *testing.T) {
@@ -54,7 +56,7 @@ func TestLargeAddress(t *testing.T) {
 	if err != nil {
 		panic(err)
 	}
-	Equal(t, val[0], "a"[0])
+	Equal(t, string(val[0]), "a")
 }
 
 // func TestAddress(t *testing.T) {

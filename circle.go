@@ -100,8 +100,13 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 	hashed := Hash(key)
 
 	var current *Circle
-	for current = c.next; bytes.Compare(current.next.hash, nil) != 0 &&
+	for current = c.next; bytes.Compare(current.hash, nil) != 0 &&
 		bytes.Compare(current.hash, hashed) == -1; current = current.next {
+	}
+
+	if bytes.Compare(current.hash, nil) == 0 {
+		// If we reached the end, just go one step further to loop around.
+		current = current.next
 	}
 
 	i := 0
