@@ -14,7 +14,7 @@ var Zero []byte = make([]byte, 256)
 var Hash func([]byte) []byte = func(bytes []byte) []byte {
 	hash := sha256.New()
 	hash.Write(bytes)
-	fmt.Println(hash.Sum(nil))
+	// fmt.Println(hash.Sum(nil))
 	return hash.Sum(nil)
 }
 
@@ -85,6 +85,22 @@ func (c *Circle) Add(incoming *Circle) *Circle {
 
 func (c *Circle) AddString(address string) *Circle {
 	return c.Add(NewCircleString(address))
+}
+
+func (c *Circle) RemoveString(address string) error {
+	return c.Remove([]byte(address))
+}
+
+func (c *Circle) Remove(address []byte) error {
+	var current *Circle
+	var last *Circle
+	for current, last = c.next, c; bytes.Compare(current.next.hash, address) != 0; current, last = current.next, current {
+		if current.hash == nil {
+			return errors.New(fmt.Sprintf("No such node in circle: %s\n", address))
+		}
+	}
+	last.next = current.next // I think this will be gc'd
+	return nil
 }
 
 func CircleFromList(strs []string) *Circle {
