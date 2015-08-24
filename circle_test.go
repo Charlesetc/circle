@@ -59,6 +59,31 @@ func TestLargeAddress(t *testing.T) {
 	Equal(t, string(val[0]), "a")
 }
 
+func TestAdjacent(t *testing.T) {
+	c := CircleFromList([]string{
+		"a",
+		"b",
+		"c",
+		"d",
+	})
+	Equal(
+		t,
+		c.Adjacent(
+			[]byte("a"),
+			[]byte("b"),
+		),
+		true,
+	)
+	Equal(
+		t,
+		c.Adjacent(
+			[]byte("a"),
+			[]byte("c"),
+		),
+		false,
+	)
+}
+
 // func TestAddress(t *testing.T) {
 // 	ClusterSize := 5
 // 	port := 0

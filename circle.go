@@ -115,10 +115,7 @@ func CircleFromList(strs []string) *Circle {
 func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 	hashed := Hash(key)
 
-	var current *Circle
-	for current = c.next; bytes.Compare(current.hash, nil) != 0 &&
-		bytes.Compare(current.hash, hashed) == -1; current = current.next {
-	}
+	current := c.find(hashed)
 
 	if bytes.Compare(current.hash, nil) == 0 {
 		// If we reached the end, just go one step further to loop around.
@@ -141,4 +138,16 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 
 		return output, nil
 	}
+}
+
+func (c *Circle) find(address []byte) *Circle {
+	var current *Circle
+	for current = c.next; bytes.Compare(current.hash, nil) != 0 &&
+		bytes.Compare(current.hash, address) == -1; current = current.next {
+	}
+	return current
+}
+
+func (c *Circle) Adjacent(first []byte, second []byte) bool {
+	return bytes.Compare(c.find(first).next.hash, second) == 0
 }
