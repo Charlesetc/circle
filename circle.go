@@ -149,5 +149,5 @@ func (c *Circle) find(address []byte) *Circle {
 }
 
 func (c *Circle) Adjacent(first []byte, second []byte) bool {
-	return bytes.Compare(c.find(first).next.hash, second) == 0
+	return bytes.Compare(c.find(first).next.address, second) == 0
 }
