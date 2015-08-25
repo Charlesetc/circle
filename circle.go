@@ -74,6 +74,9 @@ func NewCircleString(address string) *Circle {
 func (c *Circle) Add(incoming *Circle) *Circle {
 	var current *Circle
 	for current = c; bytes.Compare(current.next.hash, incoming.hash) == -1; current = current.next {
+		if bytes.Compare(current.next.hash, incoming.hash) == 0 {
+			return nil // Don't do anything if there's already the circle.
+		}
 		if bytes.Compare(current.next.hash, nil) == 0 {
 			break
 		}
@@ -94,11 +97,12 @@ func (c *Circle) RemoveString(address string) error {
 func (c *Circle) Remove(address []byte) error {
 	var current *Circle
 	var last *Circle
-	for current, last = c.next, c; bytes.Compare(current.next.hash, address) != 0; current, last = current.next, current {
-		if current.hash == nil {
+	for current, last = c.next, c; bytes.Compare(current.address, address) != 0; current, last = current.next, current {
+		if string(current.hash) == "" {
 			return errors.New(fmt.Sprintf("No such node in circle: %s\n", address))
 		}
 	}
+	// log.Printf("Remove %s, %s -> %s", string(current.address), string(last.address), string(current.next.address))
 	last.next = current.next // I think this will be gc'd
 	return nil
 }
@@ -143,11 +147,15 @@ func (c *Circle) KeyAddress(key []byte) func() ([]byte, error) {
 func (c *Circle) find(address []byte) *Circle {
 	var current *Circle
 	for current = c.next; bytes.Compare(current.hash, nil) != 0 &&
-		bytes.Compare(current.hash, address) == -1; current = current.next {
+		bytes.Compare(current.address, address) == -1; current = current.next {
 	}
 	return current
 }
 
 func (c *Circle) Adjacent(first []byte, second []byte) bool {
-	return bytes.Compare(c.find(first).next.address, second) == 0
+	next := c.find(first).next
+	if next.address == nil {
+		next = next.next // ignore the head.
+	}
+	return bytes.Compare(next.address, second) == 0
 }

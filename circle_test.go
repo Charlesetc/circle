@@ -2,7 +2,10 @@
 
 package circle
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
 
 func init() {
 	Hash = func(bytes []byte) []byte {
@@ -82,24 +85,67 @@ func TestAdjacent(t *testing.T) {
 		),
 		false,
 	)
+	Equal(
+		t,
+		c.Adjacent(
+			[]byte("d"),
+			[]byte("a"),
+		),
+		true,
+	)
 }
 
-// func TestAddress(t *testing.T) {
-// 	ClusterSize := 5
-// 	port := 0
-// 	nodes := make([]*dive.Node, ClusterSize)
-//
-// 	first := dive.NewNode(port, "")
-// 	port++
-// 	nodes[0] = first
-// 	seed := first.Address()
-//
-// 	time.Sleep(dive.PingInterval)
-//
-// 	for i := 1; i < ClusterSize; i++ {
-// 		nodes[i] = dive.NewNode(port, seed)
-// 		port++
-// 	}
-// 	time.Sleep(dive.PingInterval * time.Duration(ClusterSize*2))
-//
-// }
+func EqualCircles(t *testing.T, c1 *Circle, c2 *Circle) {
+	for current1, current2 := c1.next, c2.next; bytes.Compare(current1.address, nil) != 0; current1, current2 = current1.next, current2.next {
+		if bytes.Compare(current1.address, current2.address) != 0 {
+			t.Errorf("Expected %s, got %s", string(current1.address), string(current2.address))
+		}
+	}
+}
+
+func TestEqualCircles(t *testing.T) {
+	c := CircleFromList([]string{
+		"a",
+		"b",
+		"c",
+		"d",
+	})
+	a := CircleFromList([]string{
+		"c",
+		"d",
+		"b",
+		"a",
+	})
+	EqualCircles(t, a, c)
+	EqualCircles(t, c, a)
+}
+
+func TestRemove(t *testing.T) {
+	circle := CircleFromList([]string{
+		"a",
+		"b",
+		"c",
+		"d",
+	})
+	step_1 := CircleFromList([]string{
+		"a",
+		"c",
+		"d",
+	})
+	step_2 := CircleFromList([]string{
+		"a",
+		"c",
+	})
+	step_3 := CircleFromList([]string{
+		"c",
+	})
+
+	circle.RemoveString("b")
+	EqualCircles(t, step_1, circle)
+
+	circle.RemoveString("d")
+	EqualCircles(t, step_2, circle)
+
+	circle.RemoveString("a")
+	EqualCircles(t, step_3, circle)
+}
